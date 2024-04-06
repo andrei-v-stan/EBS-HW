@@ -1,16 +1,21 @@
 package org.example.business.workers;
 
+import org.example.business.services.FileLogger;
 import org.example.config.Configuration;
 import org.example.config.SubscriptionWorkerConfig;
+import org.example.models.Subscription;
 import org.example.models.enums.Field;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Stream;
 
 public class SubscriptionWorkerManager {
-    public static void generateSubscriptions(Configuration config) throws InterruptedException {
+    public static void generateSubscriptions(Configuration config, FileLogger fileLogger) throws InterruptedException, IOException {
         var latch = new CountDownLatch(1);
         var subscriptionWorkers = new ArrayList<SubscriptionWorker>();
         for (var i = 0; i < config.threadCount(); i++) {
@@ -20,15 +25,23 @@ public class SubscriptionWorkerManager {
             subscriptionWorkers.add(subscriptionWorker);
         }
 
+        var startTime = System.currentTimeMillis();
         latch.countDown();
 
-        System.out.println("Subscriptions:");
+        List<Subscription> totalSubscriptions = new ArrayList<>();
         for (var subscriptionWorker : subscriptionWorkers) {
             subscriptionWorker.join();
-            for (var sub : subscriptionWorker.getSubscriptions()) {
-                System.out.println(sub);
-            }
+            totalSubscriptions = Stream.concat(totalSubscriptions.stream(), subscriptionWorker.getSubscriptions().stream()).toList();
         }
+
+        var endTime = System.currentTimeMillis();
+
+        fileLogger.log("Subscriptions:").newLine();
+        fileLogger.log("Generation time: ").logTime(startTime, endTime).newLine();
+        var start = System.currentTimeMillis();
+        fileLogger.logList(totalSubscriptions).newLine();
+        var end = System.currentTimeMillis();
+        fileLogger.logTime(start, end);
     }
 
     private static SubscriptionWorkerConfig getSubscriptionWorkerConfig(Configuration config, int index) {

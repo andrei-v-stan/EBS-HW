@@ -1,24 +1,34 @@
 package org.example.business.workers;
 
+import org.example.business.services.FileLogger;
 import org.example.config.Configuration;
+import org.example.models.Publication;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Stream;
 
 public class PublicationWorkerManager {
-    public static void generatePublications(Configuration config) throws InterruptedException {
+    public static void generatePublications(Configuration config, FileLogger fileLogger) throws InterruptedException, IOException {
         var latch = new CountDownLatch(1);
         var publicationWorkers = getPublicationWorkers(config, latch);
 
+        var startTime = System.currentTimeMillis();
         latch.countDown();
 
-        System.out.println("Publications:");
+        List<Publication> totalPublications = new ArrayList<>();
         for (var publicationWorker : publicationWorkers) {
             publicationWorker.join();
-            for (var pub : publicationWorker.getPublications()) {
-                System.out.println(pub);
-            }
+            totalPublications = Stream.concat(totalPublications.stream(), publicationWorker.getPublications().stream()).toList();
         }
+
+        var endTime = System.currentTimeMillis();
+
+        fileLogger.log("Publications:").newLine();
+        fileLogger.log("Generation time: ").logTime(startTime, endTime).newLine();
+        fileLogger.logList(totalPublications).newLine();
     }
 
     private static ArrayList<PublicationWorker> getPublicationWorkers(Configuration config, CountDownLatch latch) {
