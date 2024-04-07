@@ -21,7 +21,7 @@ public class PublicationWorkerManager {
         List<Publication> totalPublications = new ArrayList<>();
         for (var publicationWorker : publicationWorkers) {
             publicationWorker.join();
-            totalPublications = Stream.concat(totalPublications.stream(), publicationWorker.getPublications().stream()).toList();
+//            totalPublications = Stream.concat(totalPublications.stream(), publicationWorker.getPublications().stream()).toList();
         }
 
         var endTime = System.currentTimeMillis();

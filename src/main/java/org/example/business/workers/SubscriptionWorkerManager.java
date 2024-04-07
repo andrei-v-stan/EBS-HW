@@ -31,17 +31,14 @@ public class SubscriptionWorkerManager {
         List<Subscription> totalSubscriptions = new ArrayList<>();
         for (var subscriptionWorker : subscriptionWorkers) {
             subscriptionWorker.join();
-            totalSubscriptions = Stream.concat(totalSubscriptions.stream(), subscriptionWorker.getSubscriptions().stream()).toList();
+//            totalSubscriptions = Stream.concat(totalSubscriptions.stream(), subscriptionWorker.getSubscriptions().stream()).toList();
         }
 
         var endTime = System.currentTimeMillis();
 
         fileLogger.log("Subscriptions:").newLine();
         fileLogger.log("Generation time: ").logTime(startTime, endTime).newLine();
-        var start = System.currentTimeMillis();
         fileLogger.logList(totalSubscriptions).newLine();
-        var end = System.currentTimeMillis();
-        fileLogger.logTime(start, end);
     }
 
     private static SubscriptionWorkerConfig getSubscriptionWorkerConfig(Configuration config, int index) {

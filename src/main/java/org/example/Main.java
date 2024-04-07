@@ -50,13 +50,14 @@ public class Main {
             put(Field.company, 0.4);
         }};
 
-        var threadCount = 1;
+        var threadCount = 10;
 //        return new Configuration(10, 100, weights, limits, companies, equalFrequencyMinimums, threadCount);
 //        return new Configuration(100, 1000, weights, limits, companies, equalFrequencyMinimums, threadCount);
 //        return new Configuration(500, 5000, weights, limits, companies, equalFrequencyMinimums, threadCount);
 //        return new Configuration(1000, 10000, weights, limits, companies, equalFrequencyMinimums, threadCount);
 //        return new Configuration(5000, 50000, weights, limits, companies, equalFrequencyMinimums, threadCount);
 //        return new Configuration(10000, 100000, weights, limits, companies, equalFrequencyMinimums, threadCount);
-        return new Configuration(10000, 1000000, weights, limits, companies, equalFrequencyMinimums, threadCount);
+//        return new Configuration(10000, 1000000, weights, limits, companies, equalFrequencyMinimums, threadCount);
+        return new Configuration(100000, 10000000, weights, limits, companies, equalFrequencyMinimums, threadCount);
     }
 }
