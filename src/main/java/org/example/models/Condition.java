@@ -44,4 +44,16 @@ public class Condition implements Serializable {
                 val +
                 ')';
     }
+
+    public Field getField() {
+        return field;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public Object getValue() {
+        return value;
+    }
 }

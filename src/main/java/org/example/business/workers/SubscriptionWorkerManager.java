@@ -15,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 
 public class SubscriptionWorkerManager {
-    public static void generateSubscriptions(Configuration config, FileLogger fileLogger) throws InterruptedException, IOException {
+    public static List<Subscription> generateSubscriptions(Configuration config, FileLogger fileLogger) throws InterruptedException, IOException {
         var latch = new CountDownLatch(1);
         var subscriptionWorkers = new ArrayList<SubscriptionWorker>();
         for (var i = 0; i < config.threadCount(); i++) {
@@ -31,7 +31,7 @@ public class SubscriptionWorkerManager {
         List<Subscription> totalSubscriptions = new ArrayList<>();
         for (var subscriptionWorker : subscriptionWorkers) {
             subscriptionWorker.join();
-//            totalSubscriptions = Stream.concat(totalSubscriptions.stream(), subscriptionWorker.getSubscriptions().stream()).toList();
+            totalSubscriptions = Stream.concat(totalSubscriptions.stream(), subscriptionWorker.getSubscriptions().stream()).toList();
         }
 
         var endTime = System.currentTimeMillis();
@@ -39,6 +39,8 @@ public class SubscriptionWorkerManager {
         fileLogger.log("Subscriptions:").newLine();
         fileLogger.log("Generation time: ").logTime(startTime, endTime).newLine();
         fileLogger.logList(totalSubscriptions).newLine();
+
+        return totalSubscriptions;
     }
 
     private static SubscriptionWorkerConfig getSubscriptionWorkerConfig(Configuration config, int index) {

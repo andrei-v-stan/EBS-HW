@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 
 public class PublicationWorkerManager {
-    public static void generatePublications(Configuration config, FileLogger fileLogger) throws InterruptedException, IOException {
+    public static List<Publication> generatePublications(Configuration config, FileLogger fileLogger) throws InterruptedException, IOException {
         var latch = new CountDownLatch(1);
         var publicationWorkers = getPublicationWorkers(config, latch);
 
@@ -21,7 +21,7 @@ public class PublicationWorkerManager {
         List<Publication> totalPublications = new ArrayList<>();
         for (var publicationWorker : publicationWorkers) {
             publicationWorker.join();
-//            totalPublications = Stream.concat(totalPublications.stream(), publicationWorker.getPublications().stream()).toList();
+            totalPublications = Stream.concat(totalPublications.stream(), publicationWorker.getPublications().stream()).toList();
         }
 
         var endTime = System.currentTimeMillis();
@@ -29,6 +29,8 @@ public class PublicationWorkerManager {
         fileLogger.log("Publications:").newLine();
         fileLogger.log("Generation time: ").logTime(startTime, endTime).newLine();
         fileLogger.logList(totalPublications).newLine();
+
+        return totalPublications;
     }
 
     private static ArrayList<PublicationWorker> getPublicationWorkers(Configuration config, CountDownLatch latch) {

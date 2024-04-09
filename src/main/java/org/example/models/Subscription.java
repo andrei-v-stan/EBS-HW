@@ -19,4 +19,8 @@ public class Subscription implements Serializable {
 
         return "{" + contentBuilder + '}';
     }
+
+    public List<Condition> getConditions() {
+        return conditions;
+    }
 }
